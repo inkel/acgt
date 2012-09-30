@@ -16,10 +16,6 @@ module ACGT
     @options[:output] = File.absolute_path(path)
   end
 
-  def add_templates_dir path
-    @options[:templates].unshift File.absolute_path(path)
-  end
-
   def parse params
     {}.tap do |vars|
       params.each do |param|
