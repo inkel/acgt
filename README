@@ -1,0 +1,75 @@
+acgt(1)
+
+NAME
+      acgt - Generate using templates
+
+SYNOPSIS
+      acgt [-h | --help] [-e] [-o path ] <template> [name:value]*
+
+DESCRIPTION
+      <template>
+          Name of the template to be used as a generator.
+
+      -e
+          Opens the template in $EDITOR for edition.
+
+      -o
+          Path to write generated content. If omitted writes to
+          STDOUT.
+
+      [name:value]*
+          Several variable replacements. If a name is used more than
+          once then the variable is converted to an array of values.
+
+          See section on default values.
+
+      -h, --help
+          Display this help message.
+
+TEMPLATES STORAGE
+      Templates are searched in ./.acgt and ~/.acgt
+
+      Templates are written using Mote, and should end in .mote
+      extension.
+
+EXAMPLE USAGE
+      Given a template ~/.acgt/gemspec.mote with the following contents:
+
+        # encoding: utf-8
+
+        Gem::Specification.new do |s|
+          s.name        = "{{ name }}"
+          s.version     = "{{ version }}"
+          s.summary     = "{{ description }}"
+          s.description = "{{ description }}"
+          s.authors     = {{ authors.inspect }}
+          s.email       = {{ email.inspect }}
+          s.homepage    = "{{ homepage }}"
+          s.files       = `git ls-files 2> /dev/null`.split("\n")
+        end
+
+      we can issue the following command to generate:
+
+        acgt gemspec name:acgt version:0.0.1 \
+          description:"DNA for simple generators" \
+          authors:"Leandro López" email:"inkel.ar@gmail.com" \
+          homepage:"http://inkel.github.com/acgt" \
+          authors: email:
+
+      generates the following output:
+
+        # encoding: utf-8
+
+        Gem::Specification.new do |s|
+          s.name        = "acgt"
+          s.version     = "0.0.1"
+          s.summary     = "DNA for simple generators"
+          s.description = "DNA for simple generators"
+          s.authors     = ["Leandro Lopez"]
+          s.email       = ["inkel.ar@gmail.com"]
+          s.homepage    = "http://inkel.github.com/acgt"
+          s.files       = `git ls-files 2> /dev/null`.split("\n")
+        end
+
+      In this example we've used empty authors and email vars at the
+      end to convert it to an array.
